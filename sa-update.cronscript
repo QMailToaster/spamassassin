@@ -1,0 +1,12 @@
+#!/bin/bash
+
+sleep $(expr $RANDOM % 7200)
+# Only restart spamd if sa-update returns 0, meaning it updated the rules
+#/usr/bin/sa-update && /etc/init.d/spamassassin condrestart > /dev/null
+#     --channel saupdates.openprotect.com \
+/usr/bin/sa-update --gpgkey D1C035168C1EBC08464946DA258CDB3ABDE9DC10 \
+      --channel updates.spamassassin.org \
+      || exit $?
+svc -d /var/qmail/supervise/spamd /var/qmail/supervise/spamd/log
+svc -t /var/qmail/supervise/spamd /var/qmail/supervise/spamd/log
+svc -u /var/qmail/supervise/spamd /var/qmail/supervise/spamd/log

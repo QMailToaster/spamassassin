@@ -1,0 +1,19 @@
+# These values can be overridden by editing ~/.spamassassin/user_prefs.cf
+# (see spamassassin(1) for details)
+# These should be safe assumptions and allow for simple visual sifting
+# without risking lost emails.
+
+ok_locales all
+skip_rbl_checks 1
+
+required_score 5
+report_safe 0
+rewrite_header Subject ***SPAM***
+
+use_pyzor 1
+
+use_auto_whitelist 1
+
+use_bayes 1
+use_bayes_rules 1
+bayes_auto_learn 1
