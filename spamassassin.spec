@@ -119,27 +119,29 @@ find $RPM_BUILD_ROOT%{perl_vendorlib}/* -type d -print |
         sed "s@^$RPM_BUILD_ROOT@%dir @g" >> %{name}-%{version}-filelist
 
 rm -f %{saconfdir}/init.pre
-install $RPM_BUILD_DIR/%{real_name}-%{version}/rules/v312.pre \
+%{__install} $RPM_BUILD_DIR/%{real_name}-%{version}/rules/v312.pre \
       %{saconfdir}/v312.pre
-install $RPM_BUILD_DIR/%{real_name}-%{version}/rules/v320.pre \
+%{__install} $RPM_BUILD_DIR/%{real_name}-%{version}/rules/v320.pre \
       %{saconfdir}/v320.pre
 
-install spamassassin.v310.pre  %{saconfdir}/v310.pre
-install spamassassin.local.cf  %{saconfdir}/local.cf
+%{__install} %{_sourcedir}/spamassassin.v310.pre  %{saconfdir}/v310.pre
+%{__install} %{_sourcedir}/spamassassin.local.cf  %{saconfdir}/local.cf
 
-%{__install} -Dp sa-update.logrotate \
-      %{buildroot}%{_sysconfdir}/logrotate.d/sa-update
-%{__install} -Dp sa-update.crontab \
-      %{buildroot}%{_sysconfdir}/cron.d/sa-update
-%{__install} -Dp sa-update.cronscript \
-      %{buildroot}%{_datadir}/spamassassin/sa-update.cron
+%{__install} -Dp %{_sourcedir}/sa-update.logrotate \
+                 %{buildroot}%{_sysconfdir}/logrotate.d/sa-update
+%{__install} -Dp %{_sourcedir}/sa-update.crontab \
+                 %{buildroot}%{_sysconfdir}/cron.d/sa-update
+%{__install} -Dp %{_sourcedir}/sa-update.cronscript \
+                 %{buildroot}%{_datadir}/spamassassin/sa-update.cron
  
-install -D run.spamd %{buildroot}%{qdir}/supervise/spamd/run
-install -D run.log.spamd %{buildroot}%{qdir}/supervise/spamd/log/run
+%{__install} -Dp %{_sourcedir}/run.spamd \
+            %{buildroot}%{qdir}/supervise/spamd/run
+%{__install} -Dp %{_sourcedir}/run.log.spamd \
+            %{buildroot}%{qdir}/supervise/spamd/log/run
 
-install -d %{buildroot}%{qdir}/supervise/spamd/supervise
-install -d %{buildroot}/var/log/qmail
-install -d %{buildroot}/var/log/qmail/spamd
+%{__install} -d %{buildroot}%{qdir}/supervise/spamd/supervise
+%{__install} -d %{buildroot}/var/log/qmail
+%{__install} -d %{buildroot}/var/log/qmail/spamd
 
 #-------------------------------------------------------------------------------
 %clean
