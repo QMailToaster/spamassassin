@@ -86,9 +86,9 @@ which create a server that considerably speeds processing of mail.
 #-------------------------------------------------------------------------------
 %build
 #-------------------------------------------------------------------------------
-%{__perl} Makefile.PL DESTDIR=$RPM_BUILD_ROOT/ SYSCONFDIR=%{_sysconfdir} INSTALLDIRS=vendor ENABLE_SSL=yes < /dev/null
+%{__perl} Makefile.PL DESTDIR=%{buildroot}/ SYSCONFDIR=%{_sysconfdir} INSTALLDIRS=vendor ENABLE_SSL=yes < /dev/null
 
-%{__make} %{?krb5backcompat:SSLCFLAGS=-DSPAMC_SSL\ -I/usr/kerberos/include} OPTIMIZE="$RPM_OPT_FLAGS"
+%{__make} %{?krb5backcompat:SSLCFLAGS=-DSPAMC_SSL\ -I/usr/kerberos/include} OPTIMIZE="%{optflags}"
 
 #-------------------------------------------------------------------------------
 %install
@@ -104,40 +104,35 @@ chmod 755 %{buildroot}%{_bindir}/* # allow stripping
 
 [ -x /usr/lib/rpm/brp-compress ] && /usr/lib/rpm/brp-compress
 
-find $RPM_BUILD_ROOT \( -name perllocal.pod -o -name .packlist \) -exec rm -v {} \;
-find $RPM_BUILD_ROOT -type d -depth -exec rmdir {} 2>/dev/null ';'
+find %{buildroot} \( -name perllocal.pod -o -name .packlist \) -exec rm -v {} \;
+find %{buildroot} -type d -depth -exec rmdir {} 2>/dev/null ';'
 
-find $RPM_BUILD_ROOT/usr -type f -print |
-        sed "s@^$RPM_BUILD_ROOT@@g" |
+find %{buildroot}/usr -type f -print |
+        sed "s@^%{buildroot}@@g" |
         grep -v perllocal.pod |
         grep -v "\.packlist" > %{name}-%{version}-filelist
 if [ "$(cat %{name}-%{version}-filelist)X" = "X" ] ; then
     echo "ERROR: EMPTY FILE LIST"
     exit -1
 fi
-find $RPM_BUILD_ROOT%{perl_vendorlib}/* -type d -print |
-        sed "s@^$RPM_BUILD_ROOT@%dir @g" >> %{name}-%{version}-filelist
+find %{buildroot}%{perl_vendorlib}/* -type d -print |
+        sed "s@^%{buildroot}@%dir @g" >> %{name}-%{version}-filelist
 
 rm -f %{saconfdir}/init.pre
-%{__install} $RPM_BUILD_DIR/%{real_name}-%{version}/rules/v312.pre \
+%{__install} %{_builddir}/%{real_name}-%{version}/rules/v312.pre \
       %{saconfdir}/v312.pre
-%{__install} $RPM_BUILD_DIR/%{real_name}-%{version}/rules/v320.pre \
+%{__install} %{_builddir}/%{real_name}-%{version}/rules/v320.pre \
       %{saconfdir}/v320.pre
 
-%{__install} %{_sourcedir}/spamassassin.v310.pre  %{saconfdir}/v310.pre
-%{__install} %{_sourcedir}/spamassassin.local.cf  %{saconfdir}/local.cf
+%{__install} %{SOURCE1}  %{saconfdir}/v310.pre
+%{__install} %{SOURCE2}  %{saconfdir}/local.cf
 
-%{__install} -Dp %{_sourcedir}/sa-update.logrotate \
-                 %{buildroot}%{_sysconfdir}/logrotate.d/sa-update
-%{__install} -Dp %{_sourcedir}/sa-update.crontab \
-                 %{buildroot}%{_sysconfdir}/cron.d/sa-update
-%{__install} -Dp %{_sourcedir}/sa-update.cronscript \
-                 %{buildroot}%{_datadir}/spamassassin/sa-update.cron
+%{__install} -Dp %{SOURCE3} %{buildroot}%{_sysconfdir}/logrotate.d/sa-update
+%{__install} -Dp %{SOURCE4} %{buildroot}%{_sysconfdir}/cron.d/sa-update
+%{__install} -Dp %{SOURCE5} %{buildroot}%{_datadir}/spamassassin/sa-update.cron
  
-%{__install} -Dp %{_sourcedir}/run.spamd \
-            %{buildroot}%{qdir}/supervise/spamd/run
-%{__install} -Dp %{_sourcedir}/run.log.spamd \
-            %{buildroot}%{qdir}/supervise/spamd/log/run
+%{__install} -Dp %{SOURCE6} %{buildroot}%{qdir}/supervise/spamd/run
+%{__install} -Dp %{SOURCE7} %{buildroot}%{qdir}/supervise/spamd/log/run
 
 %{__install} -d %{buildroot}%{qdir}/supervise/spamd/supervise
 %{__install} -d %{buildroot}/var/log/qmail
@@ -146,7 +141,7 @@ rm -f %{saconfdir}/init.pre
 #-------------------------------------------------------------------------------
 %clean
 #-------------------------------------------------------------------------------
-rm -rf $RPM_BUILD_DIR/%{real_name}-%{version}
+rm -rf %{_builddir}/%{real_name}-%{version}
 rm -rf %{buildroot}
 
 #-------------------------------------------------------------------------------
