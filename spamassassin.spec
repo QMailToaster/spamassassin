@@ -47,7 +47,7 @@ Requires:       perl(Net::DNS)
 Requires:       perl(Net::Ident)
 Requires:       perl(Net::SMTP)
 Requires:       perl(NetAddr::IP)
-Requires:       perl(Razor::Client::Agent)
+Requires:       perl(Razor::Agent)
 Requires:       perl(Time::HiRes)
 Requires:	perl(:MODULE_COMPAT_%(eval "`%{__perl} -V:version`"; echo $version))
 Requires:	gnupg
