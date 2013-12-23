@@ -47,7 +47,8 @@ Requires:       perl(Net::DNS)
 Requires:       perl(Net::Ident)
 Requires:       perl(Net::SMTP)
 Requires:       perl(NetAddr::IP)
-Requires:       perl(Razor::Agent)
+# shubes 12/23/13 - don't know why, but repoforge doesn't see the (::) format
+Requires:       perl-Razor-Agent
 Requires:       perl(Time::HiRes)
 Requires:	perl(:MODULE_COMPAT_%(eval "`%{__perl} -V:version`"; echo $version))
 Requires:	gnupg
