@@ -1,19 +1,21 @@
-%define         real_name Mail-SpamAssassin
-Name:           spamassassin
-Summary:        Spam filter for email which can be invoked from mail agents.
-Version:        3.3.2
-Release:        0%{?dist}
-License:        Apache License
-Group:          Applications/Internet
-URL:            http://spamassassin.apache.org/
-Source0:        http://supergsego.com/apache/%{name}/source/Mail-SpamAssassin-%{version}.tar.gz
-Source1:        spamassassin.v310.pre
-Source2:        spamassassin.local.cf
-Source3:        sa-update.logrotate
-Source4:        sa-update.crontab
-Source5:        sa-update.cronscript
-Source6:        run.spamd
-Source7:        run.log.spamd
+%define    real_name Mail-SpamAssassin
+Name:      spamassassin
+Summary:   Spam filter for email which can be invoked from mail agents.
+Version:   3.3.2
+Release:   0%{?dist}
+License:   Apache License
+Group:     Applications/Internet
+Vendor:    QmailToaster
+Packager:  Eric Shubert <qmt-build@datamatters.us>
+URL:       http://spamassassin.apache.org/
+Source0:   http://supergsego.com/apache/%{name}/source/Mail-SpamAssassin-%{version}.tar.gz
+Source1:   spamassassin.v310.pre
+Source2:   spamassassin.local.cf
+Source3:   sa-update.logrotate
+Source4:   sa-update.crontab
+Source5:   sa-update.cronscript
+Source6:   run.spamd
+Source7:   run.log.spamd
 BuildRequires:  perl >= 5.8.8
 %if %{?fedora}0 > 140 || %{?rhel}0 > 50
 BuildRequires:  perl-ExtUtils-MakeMaker
@@ -26,39 +28,40 @@ BuildRequires:  perl(IO::Zlib)
 BuildRequires:  perl(Net::DNS)
 BuildRequires:  perl(NetAddr::IP)
 BuildRequires:  perl(Time::HiRes)
-Requires:       perl(Archive::Tar)
-Requires:       perl(Compress::Zlib)
-Requires:       perl(Crypt::OpenSSL::Bignum)
-Requires:       perl(DB_File)
-Requires:       perl(DBI)
-Requires:       perl(Digest::SHA1)
-Requires:       perl(Encode::Detect)
-Requires:       perl(Getopt::Long)
-Requires:       perl(HTML::Parser)
-Requires:       perl(IO::Socket::INET6)
-Requires:       perl(IO::Socket::SSL)
-Requires:       perl(IO::Zlib)
-Requires:       perl(LWP::UserAgent)
-Requires:       perl(Mail::DKIM)
-Requires:       perl(Mail::DomainKeys)
-Requires:       perl(Mail::SPF::Query)
-Requires:       perl(MIME::Base64)
-Requires:       perl(Net::DNS)
-Requires:       perl(Net::Ident)
-Requires:       perl(Net::SMTP)
-Requires:       perl(NetAddr::IP)
-# shubes 12/23/13 - don't know why, but repoforge doesn't see the (::) format
-Requires:       perl-Razor-Agent
-Requires:       perl(Time::HiRes)
-Requires:	perl(:MODULE_COMPAT_%(eval "`%{__perl} -V:version`"; echo $version))
-Requires:	gnupg
-Requires:	procmail
-Requires:	qmail
-Requires:	vpopmail
-Obsoletes:	perl-Mail-SpamAssassin
-Obsoletes:	spamassassin-toaster
-Obsoletes:	perl-spamassassin
-BuildRoot:      %{_topdir}/BUILDROOT/%{name}-%{version}-%{release}.%{_arch}
+Requires:  perl(Archive::Tar)
+Requires:  perl(Compress::Zlib)
+Requires:  perl(Crypt::OpenSSL::Bignum)
+Requires:  perl(DB_File)
+Requires:  perl(DBI)
+Requires:  perl(Digest::SHA1)
+Requires:  perl(Encode::Detect)
+Requires:  perl(Getopt::Long)
+Requires:  perl(HTML::Parser)
+Requires:  perl(IO::Socket::INET6)
+Requires:  perl(IO::Socket::SSL)
+Requires:  perl(IO::Zlib)
+Requires:  perl(LWP::UserAgent)
+Requires:  perl(Mail::DKIM)
+Requires:  perl(Mail::DomainKeys)
+Requires:  perl(Mail::SPF::Query)
+Requires:  perl(MIME::Base64)
+Requires:  perl(Net::DNS)
+Requires:  perl(Net::Ident)
+Requires:  perl(Net::SMTP)
+Requires:  perl(NetAddr::IP)
+# shubes 12/23/13 - repoforge doesn't see the (::) format for this one
+# Steve H has fixed, need to wait for rebuild
+Requires:  perl-Razor-Agent
+Requires:  perl(Time::HiRes)
+Requires:  perl(:MODULE_COMPAT_%(eval "`%{__perl} -V:version`"; echo $version))
+Requires:  gnupg
+Requires:  procmail
+Requires:  qmail
+Requires:  vpopmail
+Obsoletes: perl-Mail-SpamAssassin
+Obsoletes: spamassassin-toaster
+Obsoletes: perl-spamassassin
+BuildRoot: %{_topdir}/BUILDROOT/%{name}-%{version}-%{release}.%{_arch}
 
 %define qdir /var/qmail
 %define debug_package %{nil}
