@@ -2,7 +2,7 @@
 Name:      spamassassin
 Summary:   Spam filter for email which can be invoked from mail agents.
 Version:   3.3.2
-Release:   0%{?dist}
+Release:   1%{?dist}
 License:   Apache License
 Group:     Applications/Internet
 Vendor:    QmailToaster
@@ -11,11 +11,8 @@ URL:       http://spamassassin.apache.org/
 Source0:   http://supergsego.com/apache/%{name}/source/Mail-SpamAssassin-%{version}.tar.gz
 Source1:   spamassassin.v310.pre
 Source2:   spamassassin.local.cf
-Source3:   sa-update.logrotate
-Source4:   sa-update.crontab
-Source5:   sa-update.cronscript
-Source6:   run.spamd
-Source7:   run.log.spamd
+Source3:   sa-update
+Source4:   run.spamd
 BuildRequires:  perl >= 5.8.8
 %if %{?fedora}0 > 140 || %{?rhel}0 > 50
 BuildRequires:  perl-ExtUtils-MakeMaker
@@ -131,16 +128,11 @@ rm -f %{saconfdir}/init.pre
 %{__install} %{SOURCE1}  %{saconfdir}/v310.pre
 %{__install} %{SOURCE2}  %{saconfdir}/local.cf
 
-%{__install} -Dp %{SOURCE3} %{buildroot}%{_sysconfdir}/logrotate.d/sa-update
-%{__install} -Dp %{SOURCE4} %{buildroot}%{_sysconfdir}/cron.d/sa-update
-%{__install} -Dp %{SOURCE5} %{buildroot}%{_datadir}/spamassassin/sa-update.cron
+%{__install} -Dp %{SOURCE3} %{buildroot}%{_sysconfdir}/cron.daily/sa-update
  
-%{__install} -Dp %{SOURCE6} %{buildroot}%{qdir}/supervise/spamd/run
-%{__install} -Dp %{SOURCE7} %{buildroot}%{qdir}/supervise/spamd/log/run
+%{__install} -Dp %{SOURCE4} %{buildroot}%{qdir}/supervise/spamd/run
 
 %{__install} -d %{buildroot}%{qdir}/supervise/spamd/supervise
-%{__install} -d %{buildroot}/var/log/qmail
-%{__install} -d %{buildroot}/var/log/qmail/spamd
 
 #-------------------------------------------------------------------------------
 %clean
@@ -165,9 +157,14 @@ fi
 %post
 #-------------------------------------------------------------------------------
 
-# get rules for upgrade or new install
-/usr/bin/sa-update --gpgkey D1C035168C1EBC08464946DA258CDB3ABDE9DC10 \
-      || echo "sa-update return code $?"
+# send SIGHUP to spamd when log rotates
+logrfile=/etc/logrotate.d/syslog
+if [ -f "$logrfile" ]; then
+  grep -q spamd\.pid $logrfile || \
+        sed -i '/\/bin\/kill/ a\
+	/bin/kill -HUP `cat /var/run/spamd.pid 2> /dev/null` 2> /dev/null || true' \
+        $logrfile
+fi
 
 #-------------------------------------------------------------------------------
 %postun
@@ -175,7 +172,6 @@ fi
 
 if [ $1 = "0" ]; then
   rm -fR /var/qmail/supervise/spamd/
-  rm -fR /var/log/qmail/spamd/
 fi
 #-------------------------------------------------------------------------------
 # triggerin is executed after spamassassin is installed, if simscan is installed
@@ -197,12 +193,9 @@ fi
 %doc USAGE sample-nonspam.txt sample-spam.txt
 
 # Dirs
-%attr(0755,root,root) %dir %{_sysconfdir}/mail/spamassassin
+%attr(0755,root,root)    %dir %{_sysconfdir}/mail/spamassassin
 %attr(1700,qmaill,qmail) %dir %{qdir}/supervise/spamd
-%attr(0700,qmaill,qmail) %dir %{qdir}/supervise/spamd/log
 %attr(0755,qmaill,qmail) %dir %{qdir}/supervise/spamd/supervise
-%attr(0700,qmaill,qmail) %dir /var/log/qmail
-%attr(0755,qmaill,qmail) %dir /var/log/qmail/spamd
 
 # Files
 %config(noreplace) %attr(0644,root,root) %{_sysconfdir}/mail/spamassassin/local.cf
@@ -210,17 +203,16 @@ fi
 %config(noreplace) %attr(0644,root,root) %{_sysconfdir}/mail/spamassassin/v312.pre
 %config(noreplace) %attr(0644,root,root) %{_sysconfdir}/mail/spamassassin/v320.pre
 %config(noreplace) %attr(0644,root,root) %{_sysconfdir}/mail/spamassassin/v330.pre
-%config(noreplace) %attr(0755,root,root) %{_sysconfdir}/cron.d/sa-update
-%config(noreplace) %attr(0755,root,root) %{_sysconfdir}/logrotate.d/sa-update
 
-%{_datadir}/spamassassin/
-
-%attr(0751,qmaill,qmail) %{qdir}/supervise/spamd/run
-%attr(0751,qmaill,qmail) %{qdir}/supervise/spamd/log/run
+#scripts
+%attr(0755,root,root)     %{_sysconfdir}/cron.daily/sa-update
+%attr(0751,qmaill,qmail)  %{qdir}/supervise/spamd/run
 
 #-------------------------------------------------------------------------------
 %changelog
 #-------------------------------------------------------------------------------
+* Mon Apr 07 2014 Eric Shubert <eric@datamatters.us> 3.3.2-1.qt
+- Modified to use syslog
 * Sat Nov 16 2013 Eric Shubert <eric@datamatters.us> 3.3.2-0.qt
 - Migrated to repoforge
 - Removed -toaster designation

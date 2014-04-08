@@ -1,5 +1,0 @@
-#
-# /var/log/sa-update.log contains a history log of sa-update runs
-# stdout goes to log only, stderr goes to log and cron output (email errors)
-
-10 4 * * * root /usr/share/spamassassin/sa-update.cron >>/var/log/sa-update.log | tee -a /var/log/sa-update.log
