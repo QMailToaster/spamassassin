@@ -225,7 +225,7 @@ fi
 
 # Executables
 %attr(0755,root,root)     %{_sysconfdir}/cron.daily/sa-update
-%attr(0755,root,root)     %{_initpath}/%{name}
+#%attr(0755,root,root)     %{_initpath}/%{name}
 
 #-------------------------------------------------------------------------------
 %changelog
