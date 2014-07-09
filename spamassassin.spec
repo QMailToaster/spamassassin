@@ -97,8 +97,6 @@ which create a server that considerably speeds processing of mail.
 %define _initpath  %{_sysconfdir}/rc.d/init.d
 
 rm -rf %{buildroot}
-%{__install} -d %{buildroot}%{_initpath}
-
 
 %makeinstall PREFIX=%{buildroot}%{_prefix} \
      INSTALLMAN1DIR=%{buildroot}%{_mandir}/man1 \
@@ -134,6 +132,7 @@ rm -f %{saconfdir}/init.pre
 %{__install} -Dp %{SOURCE3}  %{buildroot}%{_sysconfdir}/cron.daily/sa-update
 %{__install} -Dp %{SOURCE4}  %{buildroot}%{_sysconfdir}/sysconfig/%{name}
  
+%{__install} -d              %{buildroot}%{_initpath}
 %{__install} %{_builddir}/%{real_name}-%{version}/spamd/redhat-rc-script.sh \
                              %{buildroot}%{_initpath}/%{name}
 
