@@ -60,7 +60,6 @@ Obsoletes: spamassassin-toaster
 Obsoletes: perl-spamassassin
 BuildRoot: %{_topdir}/BUILDROOT/%{name}-%{version}-%{release}.%{_arch}
 
-%define qdir /var/qmail
 %define debug_package %{nil}
 %define _use_internal_dependency_generator 0
 %define krb5backcompat %([ -a /usr/kerberos/include/krb5.h ] && echo 1 || echo 0)
@@ -215,8 +214,6 @@ fi
 
 # Dirs
 %attr(0755,root,root)    %dir %{_sysconfdir}/mail/%{name}
-%attr(1700,qmaill,qmail) %dir %{qdir}/supervise/spamd
-%attr(0755,qmaill,qmail) %dir %{qdir}/supervise/spamd/supervise
 
 # Files
 %config(noreplace) %attr(0644,root,root) %{_sysconfdir}/mail/%{name}/local.cf
