@@ -96,7 +96,8 @@ which create a server that considerably speeds processing of mail.
 rm -rf %{buildroot}
 %{__install} -d %{buildroot}%{_initpath}
 
-%define saconfdir %{buildroot}%{_sysconfdir}/mail/%{name}
+%define saconfdir  %{buildroot}%{_sysconfdir}/mail/%{name}
+%define _initpath  %{_sysconfdir}/rc.d/init.d
 
 %makeinstall PREFIX=%{buildroot}%{_prefix} \
      INSTALLMAN1DIR=%{buildroot}%{_mandir}/man1 \
@@ -225,7 +226,7 @@ fi
 
 # Executables
 %attr(0755,root,root)     %{_sysconfdir}/cron.daily/sa-update
-#%attr(0755,root,root)     %{_initpath}/%{name}
+%attr(0755,root,root)     %{_initpath}/%{name}
 
 #-------------------------------------------------------------------------------
 %changelog
