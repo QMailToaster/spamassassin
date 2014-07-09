@@ -1,0 +1,1 @@
+SPAMDOPTIONS="-d -x -u vpopmail -m5"

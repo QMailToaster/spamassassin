@@ -2,7 +2,7 @@
 Name:      spamassassin
 Summary:   Spam filter for email which can be invoked from mail agents.
 Version:   3.3.2
-Release:   1%{?dist}
+Release:   2%{?dist}
 License:   Apache License
 Group:     Applications/Internet
 Vendor:    QmailToaster
@@ -12,7 +12,6 @@ Source0:   http://supergsego.com/apache/%{name}/source/Mail-SpamAssassin-%{versi
 Source1:   spamassassin.v310.pre
 Source2:   spamassassin.local.cf
 Source3:   sa-update
-Source4:   run.spamd
 BuildRequires:  perl >= 5.8.8
 %if %{?fedora}0 > 140 || %{?rhel}0 > 50
 BuildRequires:  perl-ExtUtils-MakeMaker
@@ -95,6 +94,9 @@ which create a server that considerably speeds processing of mail.
 %install
 #-------------------------------------------------------------------------------
 rm -rf %{buildroot}
+%{__install} -d %{buildroot}%{_initpath}
+%{__install} -d %{buildroot}%{_sysconfdir}/sysconfig
+
 %define saconfdir %{buildroot}%{_sysconfdir}/mail/%{name}
 
 %makeinstall PREFIX=%{buildroot}%{_prefix} \
@@ -130,9 +132,10 @@ rm -f %{saconfdir}/init.pre
 
 %{__install} -Dp %{SOURCE3} %{buildroot}%{_sysconfdir}/cron.daily/sa-update
  
-%{__install} -Dp %{SOURCE4} %{buildroot}%{qdir}/supervise/spamd/run
-
-%{__install} -d %{buildroot}%{qdir}/supervise/spamd/supervise
+%{__install} %{_builddir}/%{real_name}-%{version}/spamd/redhat-rc-script.sh \
+      %{buildroot}%{_initpath}/%{name}
+echo 'SPAMDOPTIONS="-d -x -u vpopmail -m5"' \
+      >%{buildroot}%{_sysconfdir}/sysconfig/%{name}
 
 #-------------------------------------------------------------------------------
 %clean
@@ -157,6 +160,14 @@ fi
 %post
 #-------------------------------------------------------------------------------
 
+# stop spamd and move supervise scripts if present
+oldsupdir=/var/qmail/supervise/spamd
+if [ ! -z "$(which svc 2>/dev/null)" ] \
+      && [ -d "$oldsupdir" ]; then
+  svc -d $oldsupdir
+  mv $oldsupdir /root/spamd.supervise
+fi
+
 # send SIGHUP to spamd when log rotates
 logrfile=/etc/logrotate.d/syslog
 if [ -f "$logrfile" ]; then
@@ -165,6 +176,17 @@ if [ -f "$logrfile" ]; then
 	/bin/kill -HUP `cat /var/run/spamd.pid 2> /dev/null` 2> /dev/null || true' \
         $logrfile
 fi
+
+/sbin/chkconfig --add spamd
+/sbin/chkconfig spamd on
+/sbin/service spamd status     >/dev/null 2>&1
+rc=$?
+if [ "$rc" = "0" ]; then
+  function=restart
+else
+  function=start
+fi
+/sbin/service spamd $function  >dev/null 2>&1
 
 #-------------------------------------------------------------------------------
 %postun
@@ -193,24 +215,27 @@ fi
 %doc USAGE sample-nonspam.txt sample-spam.txt
 
 # Dirs
-%attr(0755,root,root)    %dir %{_sysconfdir}/mail/spamassassin
+%attr(0755,root,root)    %dir %{_sysconfdir}/mail/%{name}
 %attr(1700,qmaill,qmail) %dir %{qdir}/supervise/spamd
 %attr(0755,qmaill,qmail) %dir %{qdir}/supervise/spamd/supervise
 
 # Files
-%config(noreplace) %attr(0644,root,root) %{_sysconfdir}/mail/spamassassin/local.cf
-%config            %attr(0644,root,root) %{_sysconfdir}/mail/spamassassin/v310.pre
-%config(noreplace) %attr(0644,root,root) %{_sysconfdir}/mail/spamassassin/v312.pre
-%config(noreplace) %attr(0644,root,root) %{_sysconfdir}/mail/spamassassin/v320.pre
-%config(noreplace) %attr(0644,root,root) %{_sysconfdir}/mail/spamassassin/v330.pre
+%config(noreplace) %attr(0644,root,root) %{_sysconfdir}/mail/%{name}/local.cf
+%config            %attr(0644,root,root) %{_sysconfdir}/mail/%{name}/v310.pre
+%config(noreplace) %attr(0644,root,root) %{_sysconfdir}/mail/%{name}/v312.pre
+%config(noreplace) %attr(0644,root,root) %{_sysconfdir}/mail/%{name}/v320.pre
+%config(noreplace) %attr(0644,root,root) %{_sysconfdir}/mail/%{name}/v330.pre
+%config            %attr(0644,root,root) %{_sysconfdir}/sysconfig/%{name}
 
-#scripts
+# Executables
 %attr(0755,root,root)     %{_sysconfdir}/cron.daily/sa-update
-%attr(0751,qmaill,qmail)  %{qdir}/supervise/spamd/run
+%attr(0755,root,root)     %{_initpath}/%{name}
 
 #-------------------------------------------------------------------------------
 %changelog
 #-------------------------------------------------------------------------------
+* Tue Jul  8 2014 Eric Shubert <eric@datamatters.us> 3.3.2-2.qt
+- Modified to use init script instead of supervise
 * Mon Apr 07 2014 Eric Shubert <eric@datamatters.us> 3.3.2-1.qt
 - Modified to use syslog
 * Sat Nov 16 2013 Eric Shubert <eric@datamatters.us> 3.3.2-0.qt

@@ -1,2 +1,0 @@
-#!/bin/sh
-exec /usr/bin/spamd -x -u vpopmail -r /var/run/spamd.pid >/dev/null 2>&1
