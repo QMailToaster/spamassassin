@@ -134,7 +134,7 @@ rm -f %{saconfdir}/init.pre
  
 %{__install} -d              %{buildroot}%{_initpath}
 %{__install} %{_builddir}/%{real_name}-%{version}/spamd/redhat-rc-script.sh \
-                             %{buildroot}%{_initpath}/%{name}
+                             %{buildroot}%{_initpath}/spamd
 
 #-------------------------------------------------------------------------------
 %clean
@@ -226,7 +226,7 @@ fi
 
 # Executables
 %attr(0755,root,root)     %{_sysconfdir}/cron.daily/sa-update
-%attr(0755,root,root)     %{_initpath}/%{name}
+%attr(0755,root,root)     %{_initpath}/spamd
 
 #-------------------------------------------------------------------------------
 %changelog
