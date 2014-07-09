@@ -12,6 +12,7 @@ Source0:   http://supergsego.com/apache/%{name}/source/Mail-SpamAssassin-%{versi
 Source1:   spamassassin.v310.pre
 Source2:   spamassassin.local.cf
 Source3:   sa-update
+Source4:   spamassassin.sysconfig
 BuildRequires:  perl >= 5.8.8
 %if %{?fedora}0 > 140 || %{?rhel}0 > 50
 BuildRequires:  perl-ExtUtils-MakeMaker
@@ -95,7 +96,6 @@ which create a server that considerably speeds processing of mail.
 #-------------------------------------------------------------------------------
 rm -rf %{buildroot}
 %{__install} -d %{buildroot}%{_initpath}
-%{__install} -d %{buildroot}%{_sysconfdir}/sysconfig
 
 %define saconfdir %{buildroot}%{_sysconfdir}/mail/%{name}
 
@@ -123,19 +123,18 @@ find %{buildroot}%{perl_vendorlib}/* -type d -print |
 
 rm -f %{saconfdir}/init.pre
 %{__install} %{_builddir}/%{real_name}-%{version}/rules/v312.pre \
-      %{saconfdir}/v312.pre
+                             %{saconfdir}/v312.pre
 %{__install} %{_builddir}/%{real_name}-%{version}/rules/v320.pre \
-      %{saconfdir}/v320.pre
+                             %{saconfdir}/v320.pre
 
-%{__install} %{SOURCE1}  %{saconfdir}/v310.pre
-%{__install} %{SOURCE2}  %{saconfdir}/local.cf
+%{__install} %{SOURCE1}      %{saconfdir}/v310.pre
+%{__install} %{SOURCE2}      %{saconfdir}/local.cf
 
-%{__install} -Dp %{SOURCE3} %{buildroot}%{_sysconfdir}/cron.daily/sa-update
+%{__install} -Dp %{SOURCE3}  %{buildroot}%{_sysconfdir}/cron.daily/sa-update
+%{__install} -Dp %{SOURCE4}  %{buildroot}%{_sysconfdir}/sysconfig/%{name}
  
 %{__install} %{_builddir}/%{real_name}-%{version}/spamd/redhat-rc-script.sh \
-      %{buildroot}%{_initpath}/%{name}
-echo 'SPAMDOPTIONS="-d -x -u vpopmail -m5"' \
-      >%{buildroot}%{_sysconfdir}/sysconfig/%{name}
+                             %{buildroot}%{_initpath}/%{name}
 
 #-------------------------------------------------------------------------------
 %clean
