@@ -101,6 +101,7 @@ rm -rf %{buildroot}
 %makeinstall PREFIX=%{buildroot}%{_prefix} \
      INSTALLMAN1DIR=%{buildroot}%{_mandir}/man1 \
      INSTALLMAN3DIR=%{buildroot}%{_mandir}/man3 \
+     INSTALLCONF=%{saconfdir} \
      LOCAL_RULES_DIR=%{saconfdir}
 chmod 755 %{buildroot}%{_bindir}/* # allow stripping
 
