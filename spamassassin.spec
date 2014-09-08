@@ -121,9 +121,9 @@ find %{buildroot}%{perl_vendorlib}/* -type d -print |
         sed "s@^%{buildroot}@%dir @g" >> %{name}-%{version}-filelist
 
 rm -f %{saconfdir}/init.pre
-%{__install} %{_builddir}/%{real_name}-%{version}/rules/v312.pre \
+%{__install} -Dp %{_builddir}/%{real_name}-%{version}/rules/v312.pre \
                              %{saconfdir}/v312.pre
-%{__install} %{_builddir}/%{real_name}-%{version}/rules/v320.pre \
+%{__install}     %{_builddir}/%{real_name}-%{version}/rules/v320.pre \
                              %{saconfdir}/v320.pre
 
 %{__install} %{SOURCE1}      %{saconfdir}/v310.pre
@@ -222,7 +222,7 @@ fi
 %doc USAGE sample-nonspam.txt sample-spam.txt
 
 # Dirs
-%attr(0755,root,root)    %dir %{_sysconfdir}/mail/%{name}
+%attr(0755,root,root)    %dir %{_sysconfdir}/%{name}
 
 # Files
 %config(noreplace) %attr(0644,root,root) %{_sysconfdir}/%{name}/local.cf
