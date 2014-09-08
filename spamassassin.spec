@@ -1,8 +1,8 @@
 %define    real_name Mail-SpamAssassin
 Name:      spamassassin
 Summary:   Spam filter for email which can be invoked from mail agents.
-Version:   3.3.2
-Release:   2%{?dist}
+Version:   3.4.0
+Release:   0%{?dist}
 License:   Apache License
 Group:     Applications/Internet
 Vendor:    QmailToaster
@@ -33,9 +33,9 @@ Requires:  perl(DB_File)
 Requires:  perl(DBI)
 Requires:  perl(Digest::SHA1)
 Requires:  perl(Encode::Detect)
+Requires:  perl(Geo::IP)
 Requires:  perl(Getopt::Long)
 Requires:  perl(HTML::Parser)
-Requires:  perl(IO::Socket::INET6)
 Requires:  perl(IO::Socket::IP)
 Requires:  perl(IO::Socket::SSL)
 Requires:  perl(IO::Zlib)
@@ -93,7 +93,7 @@ which create a server that considerably speeds processing of mail.
 #-------------------------------------------------------------------------------
 %install
 #-------------------------------------------------------------------------------
-%define saconfdir  %{buildroot}%{_sysconfdir}/mail/%{name}
+%define saconfdir  %{buildroot}%{_sysconfdir}/%{name}
 %define _initpath  %{_sysconfdir}/rc.d/init.d
 
 rm -rf %{buildroot}
@@ -167,6 +167,14 @@ if [ ! -z "$(which svc 2>/dev/null)" ] \
   mv $oldsupdir /root/spamd.supervise
 fi
 
+# rename old configuration directory to minimize confusion
+oldspamconf=/etc/mail/spamassassin
+if [ -d "$oldspamconf"]; then
+  mv /etc/spamassassin/local.cf /etc/spamassassin/local.cf.rpmnew
+  cp -p $oldspamconf/local.cf /etc/spamassassin/.
+  mv $oldspamconf $oldspamconf.old
+fi
+
 # send SIGHUP to spamd when log rotates
 logrfile=/etc/logrotate.d/syslog
 if [ -f "$logrfile" ]; then
@@ -180,7 +188,7 @@ fi
 /sbin/chkconfig spamd on
 /sbin/service spamd status     >/dev/null 2>&1
 rc=$?
-if [ "$rc" = "0" ]; then
+if [ "$rc" == "0" ]; then
   function=restart
 else
   function=start
@@ -217,11 +225,12 @@ fi
 %attr(0755,root,root)    %dir %{_sysconfdir}/mail/%{name}
 
 # Files
-%config(noreplace) %attr(0644,root,root) %{_sysconfdir}/mail/%{name}/local.cf
-%config            %attr(0644,root,root) %{_sysconfdir}/mail/%{name}/v310.pre
-%config(noreplace) %attr(0644,root,root) %{_sysconfdir}/mail/%{name}/v312.pre
-%config(noreplace) %attr(0644,root,root) %{_sysconfdir}/mail/%{name}/v320.pre
-%config(noreplace) %attr(0644,root,root) %{_sysconfdir}/mail/%{name}/v330.pre
+%config(noreplace) %attr(0644,root,root) %{_sysconfdir}/%{name}/local.cf
+%config            %attr(0644,root,root) %{_sysconfdir}/%{name}/v310.pre
+%config            %attr(0644,root,root) %{_sysconfdir}/%{name}/v312.pre
+%config            %attr(0644,root,root) %{_sysconfdir}/%{name}/v320.pre
+%config            %attr(0644,root,root) %{_sysconfdir}/%{name}/v330.pre
+%config            %attr(0644,root,root) %{_sysconfdir}/%{name}/v340.pre
 %config            %attr(0644,root,root) %{_sysconfdir}/sysconfig/%{name}
 
 # Executables
@@ -231,6 +240,10 @@ fi
 #-------------------------------------------------------------------------------
 %changelog
 #-------------------------------------------------------------------------------
+* Mon Sep  8 2014 Eric Shubert <eric@datamatters.us> 3.4.0-0.qt
+- upgraded to upstreadm 3.4.0 version
+- moved configuration files to /etc/spamassassin
+- modified v3xx.pre file to replace (removed noreplace)
 * Tue Jul  8 2014 Eric Shubert <eric@datamatters.us> 3.3.2-2.qt
 - Modified to use init script instead of supervise
 * Mon Apr 07 2014 Eric Shubert <eric@datamatters.us> 3.3.2-1.qt
