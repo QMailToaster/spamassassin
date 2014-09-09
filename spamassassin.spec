@@ -91,7 +91,7 @@ which create a server that considerably speeds processing of mail.
       SYSCONFDIR=%{_sysconfdir} \
       INSTALLDIRS=vendor \
       ENABLE_SSL=yes \
-      LOCALRULESDIR=%{_sysconfdir} \
+      LOCALRULESDIR=%{_sysconfdir}/%{name} \
       < /dev/null
 
 %{__make} %{?krb5backcompat:SSLCFLAGS=-DSPAMC_SSL\ -I/usr/kerberos/include} \
