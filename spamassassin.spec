@@ -86,9 +86,16 @@ which create a server that considerably speeds processing of mail.
 #-------------------------------------------------------------------------------
 %build
 #-------------------------------------------------------------------------------
-%{__perl} Makefile.PL DESTDIR=%{buildroot}/ SYSCONFDIR=%{_sysconfdir} INSTALLDIRS=vendor ENABLE_SSL=yes < /dev/null
+%{__perl} Makefile.PL \
+      DESTDIR=%{buildroot}/ \
+      SYSCONFDIR=%{_sysconfdir} \
+      INSTALLDIRS=vendor \
+      ENABLE_SSL=yes \
+      LOCALRULESDIR=%{_sysconfdir} \
+      < /dev/null
 
-%{__make} %{?krb5backcompat:SSLCFLAGS=-DSPAMC_SSL\ -I/usr/kerberos/include} OPTIMIZE="%{optflags}"
+%{__make} %{?krb5backcompat:SSLCFLAGS=-DSPAMC_SSL\ -I/usr/kerberos/include} \
+      OPTIMIZE="%{optflags}"
 
 #-------------------------------------------------------------------------------
 %install
@@ -101,7 +108,6 @@ rm -rf %{buildroot}
 %makeinstall PREFIX=%{buildroot}%{_prefix} \
      INSTALLMAN1DIR=%{buildroot}%{_mandir}/man1 \
      INSTALLMAN3DIR=%{buildroot}%{_mandir}/man3 \
-     DESTINSTALLCONF=%{saconfdir} \
      LOCAL_RULES_DIR=%{saconfdir}
 chmod 755 %{buildroot}%{_bindir}/* # allow stripping
 
