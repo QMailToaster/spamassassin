@@ -36,7 +36,9 @@ Requires:  perl(Encode::Detect)
 Requires:  perl(Geo::IP)
 Requires:  perl(Getopt::Long)
 Requires:  perl(HTML::Parser)
-Requires:  perl(IO::Socket::IP)
+# IO::Socket::IP is optional, but provides cleaner IP support
+# regardless of family (IPV4/IPV6). New with v3.4.0
+#Requires:  perl(IO::Socket::IP)
 Requires:  perl(IO::Socket::SSL)
 Requires:  perl(IO::Zlib)
 Requires:  perl(Mail::DKIM)
