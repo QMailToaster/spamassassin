@@ -13,6 +13,7 @@ Source1:   spamassassin.v310.pre
 Source2:   spamassassin.local.cf
 Source3:   sa-update
 Source4:   spamassassin.sysconfig
+Patch0:    v340-util.patch
 BuildRequires:  perl >= 5.8.8
 %if %{?fedora}0 > 140 || %{?rhel}0 > 50
 BuildRequires:  perl-ExtUtils-MakeMaker
@@ -84,6 +85,7 @@ which create a server that considerably speeds processing of mail.
 #-------------------------------------------------------------------------------
 
 %setup -q -n Mail-SpamAssassin-%{version}
+%patch0 -p0
 
 #-------------------------------------------------------------------------------
 %build
@@ -178,7 +180,7 @@ fi
 
 # rename old configuration directory to minimize confusion
 oldspamconf=/etc/mail/spamassassin
-if [ -d "$oldspamconf"]; then
+if [ -d "$oldspamconf" ]; then
   mv /etc/spamassassin/local.cf /etc/spamassassin/local.cf.rpmnew
   cp -p $oldspamconf/local.cf /etc/spamassassin/.
   mv $oldspamconf $oldspamconf.old
@@ -249,6 +251,10 @@ fi
 #-------------------------------------------------------------------------------
 %changelog
 #-------------------------------------------------------------------------------
+* Mon Sep 15 2014 Eric Shubert <eric@datamatters.us> 3.4.0-1.qt
+- fixed sa-update to use 'service' instead of 'svc'
+- patched Util.pm for spamd -x bug #7015
+- retain local.cf from its old location
 * Mon Sep  8 2014 Eric Shubert <eric@datamatters.us> 3.4.0-0.qt
 - upgraded to upstreadm 3.4.0 version
 - moved configuration files to /etc/spamassassin

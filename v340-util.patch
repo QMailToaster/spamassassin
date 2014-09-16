@@ -1,0 +1,12 @@
+--- Util.pm.orig        2014-02-07 09:36:28.000000000 +0100
++++ Util.pm     2014-02-20 14:47:09.879293333 +0100
+@@ -285,7 +285,7 @@
+   my $r = ref $_[0];
+   if (!$r) {
+     no re 'taint';  # override a  "use re 'taint'"  from outer scope
+-    return if !defined $_[0];
++    return undef if !defined $_[0];
+     local($1); # avoid Perl taint bug: tainted global $1 propagates
+taintedness
+     $_[0] =~ /^(.*)\z/s;
+     return $1; 
