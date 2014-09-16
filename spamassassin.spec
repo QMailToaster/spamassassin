@@ -1,7 +1,7 @@
 %define    real_name Mail-SpamAssassin
 Name:      spamassassin
 Summary:   Spam filter for email which can be invoked from mail agents.
-Version:   3.4.0
+Version:   3.4.1
 Release:   0%{?dist}
 License:   Apache License
 Group:     Applications/Internet
