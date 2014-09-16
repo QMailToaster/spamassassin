@@ -8,4 +8,4 @@
 +    return undef if !defined $_[0];
      local($1); # avoid Perl taint bug: tainted global $1 propagates taintedness
      $_[0] =~ /^(.*)\z/s;
-     return $1; 
+     return $1;
