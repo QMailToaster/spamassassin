@@ -8,6 +8,4 @@ if [ "${PIPESTATUS[0]}" != "0" ]; then
   exit ${PIPESTATUS[0]}
 fi
 
-svc -d /var/qmail/supervise/spamd | logger -i -p mail.info
-svc -t /var/qmail/supervise/spamd | logger -i -p mail.info
-svc -u /var/qmail/supervise/spamd | logger -i -p mail.info
+service spamd restart
