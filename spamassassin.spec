@@ -179,10 +179,15 @@ if [ ! -z "$(which svc 2>/dev/null)" ] \
 fi
 
 # rename old configuration directory to minimize confusion
+# and bring customized local.cf forward to new config directory
 oldspamconf=/etc/mail/spamassassin
+newspamconf=/etc/spamassassin
 if [ -d "$oldspamconf" ]; then
-  mv /etc/spamassassin/local.cf /etc/spamassassin/local.cf.rpmnew
-  cp -p $oldspamconf/local.cf /etc/spamassassin/.
+# rpm will have saved a modified local.cf file instead of removing it
+  if [ -f $oldspamconf/local.cf.rpmsave ]; then
+    mv $newspamconf/local.cf $newspamconf/local.cf.rpmnew
+    cp -p $oldspamconf/local.cf.rpmsave $newspamconf/local.cf
+  fi
   mv $oldspamconf $oldspamconf.old
 fi
 
