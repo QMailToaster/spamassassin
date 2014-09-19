@@ -2,7 +2,7 @@
 Name:      spamassassin
 Summary:   Spam filter for email which can be invoked from mail agents.
 Version:   3.4.0
-Release:   1%{?dist}
+Release:   2%{?dist}
 License:   Apache License
 Group:     Applications/Internet
 Vendor:    QmailToaster
