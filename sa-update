@@ -1,11 +1,13 @@
 #!/bin/bash
 
 # Only restart spamd if sa-update returns 0, meaning it updated the rules
+# 09/18/14 shubes - added -r flag to force condrestart when upgrading
 
 /usr/bin/sa-update | logger -i -p mail.info
 
-if [ "${PIPESTATUS[0]}" != "0" ]; then
+if [ "${PIPESTATUS[0]}" == "0" ] \
+      || [ "$1" != "-r" ]; then
+  /sbin/service spamd condrestart >/dev/null 2>&1
+else
   exit ${PIPESTATUS[0]}
 fi
-
-service spamd restart

@@ -183,9 +183,12 @@ fi
 oldspamconf=/etc/mail/spamassassin
 newspamconf=/etc/spamassassin
 if [ -d "$oldspamconf" ]; then
-# rpm will have saved a modified local.cf file instead of removing it
-  if [ -f $oldspamconf/local.cf.rpmsave ]; then
-    mv $newspamconf/local.cf $newspamconf/local.cf.rpmnew
+  if [ -f $oldspamconf/local.cf ]; then
+    mv $newspamconf/local.cf     $newspamconf/local.cf.rpmnew
+    cp -p $oldspamconf/local.cf  $newspamconf/local.cf
+  elif [ -f $oldspamconf/local.cf.rpmsave ]; then
+#   this probably will never really happen, but I'm not absolutely certain
+    mv $newspamconf/local.cf            $newspamconf/local.cf.rpmnew
     cp -p $oldspamconf/local.cf.rpmsave $newspamconf/local.cf
   fi
   mv $oldspamconf $oldspamconf.old
@@ -202,14 +205,14 @@ fi
 
 /sbin/chkconfig --add spamd
 /sbin/chkconfig spamd on
-/sbin/service spamd status     >/dev/null 2>&1
-rc=$?
-if [ "$rc" == "0" ]; then
-  function=restart
-else
-  function=start
+
+# update (or get) the sa rules, and restart spamd if it's running
+/etc/cron.daily/sa-update -r
+
+# if spamd is not running, start it
+if [ ! -e /var/lock/subsys/spamd ]; then
+  /sbin/service spamd start >/dev/null 2>&1
 fi
-/sbin/service spamd $function  >dev/null 2>&1
 
 #-------------------------------------------------------------------------------
 %postun
@@ -256,6 +259,9 @@ fi
 #-------------------------------------------------------------------------------
 %changelog
 #-------------------------------------------------------------------------------
+* Thu Sep 18 2014 Eric Shubert <eric@datamatters.us> 3.4.0-2.qt
+- Fixed sa-update to restart conditionally, and run sa-update from %post
+- Fixed local.cf retention
 * Mon Sep 15 2014 Eric Shubert <eric@datamatters.us> 3.4.0-1.qt
 - fixed sa-update to use 'service' instead of 'svc'
 - patched Util.pm for spamd -x bug #7015
